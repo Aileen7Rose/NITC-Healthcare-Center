@@ -5,6 +5,11 @@ require('dotenv').config();
 const app= express(); //creates server
 app.use(cors());
 app.use(express.json());// middleware applied to every request
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
 app.get('/doctors', (req, res)=>{
     const query= 'SELECT D_id, D_name, D_spec, D_phone FROM doctor'; // stores sql query as a string
     db.query(query, (err, results)=>{
