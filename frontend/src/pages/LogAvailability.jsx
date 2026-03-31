@@ -14,8 +14,8 @@ function LogAvailability() {
   }
 
   return (
-    <div>
-      <h2>Log Availability</h2>
+    <div className="page-container">
+      <h2 className="page-header">Log Availability</h2>
 
       <input
         type="text"

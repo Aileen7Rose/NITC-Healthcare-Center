@@ -16,8 +16,8 @@ function ScheduleAppointment() {
   }
 
   return (
-    <div>
-      <h2>Schedule Appointment</h2>
+    <div className="page-container">
+      <h2 className="page-header">Schedule Appointment</h2>
 
       <input
         type="text"

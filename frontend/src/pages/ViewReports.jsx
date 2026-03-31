@@ -2,16 +2,14 @@ import { useState, useEffect } from 'react';
 
 function ViewReports() {
   const [reports, setReports] = useState([]);
-  const [P_id, setPid] = useState('');
 
   useEffect(() => {
     console.log('Will fetch reports from backend here later');
   }, []);
 
   return (
-    <div>
-      <h2>My Reports</h2>
-
+    <div className="page-container">
+      <h2 className="page-header">My Reports</h2>
       <table>
         <thead>
           <tr>

@@ -16,8 +16,8 @@ function AddReport() {
   }
 
   return (
-    <div>
-      <h2>Add Patient Report</h2>
+    <div className="page-container">
+      <h2 className="page-header">Add Patient Report</h2>
 
       <input
         type="text"

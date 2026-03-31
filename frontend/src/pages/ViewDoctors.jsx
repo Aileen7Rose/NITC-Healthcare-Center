@@ -8,8 +8,8 @@ function ViewDoctors() {
   }, []);
 
   return (
-    <div>
-      <h2>Available Doctors</h2>
+    <div className="page-container">
+      <h2 className="page-header">Available Doctors</h2>
       <table>
         <thead>
           <tr>

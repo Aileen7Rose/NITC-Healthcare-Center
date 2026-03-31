@@ -8,9 +8,8 @@ function ViewPreferences() {
   }, []);
 
   return (
-    <div>
-      <h2>Patient Preferences</h2>
-
+    <div className="page-container">
+      <h2 className="page-header">Patient Preferences</h2>
       <table>
         <thead>
           <tr>

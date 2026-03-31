@@ -12,8 +12,8 @@ function PreferenceForm() {
   }
 
   return (
-    <div>
-      <h2>Book Appointment Preference</h2>
+    <div className="page-container">
+      <h2 className="page-header">Book Appointment Preference</h2>
 
       <input
         type="text"
