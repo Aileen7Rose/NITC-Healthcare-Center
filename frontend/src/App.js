@@ -7,6 +7,10 @@ import ReceptionDashboard from './pages/ReceptionDashboard';
 import ViewDoctors from './pages/ViewDoctors';
 import PreferenceForm from './pages/PreferenceForm';
 import ViewReports from './pages/ViewReports';
+import LogAvailability from './pages/LogAvailability';
+import AddReport from './pages/AddReport';
+import ViewPreferences from './pages/ViewPreferences';
+import ScheduleAppointment from './pages/ScheduleAppointment';
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +23,10 @@ function App() {
         <Route path="/doctors" element={<ViewDoctors />} />
         <Route path="/preference" element={<PreferenceForm />} />
         <Route path="/reports" element={<ViewReports />} />
+        <Route path="/log-availability" element={<LogAvailability />} />
+        <Route path="/add-report" element={<AddReport />} />
+        <Route path="/view-preferences" element={<ViewPreferences />} />
+        <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
       </Routes>
     </BrowserRouter>
   );
