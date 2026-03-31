@@ -23,65 +23,65 @@ function Signup() {
   }
 
   return (
-    <div>
-      <h2>Sign Up</h2>
+  <div className="auth-container">
+    <h2>Sign Up</h2>
 
-      <input
-        type="text"
-        placeholder="Full Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Full Name"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
 
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
 
-      <input
-        type="text"
-        placeholder="Phone Number"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Phone Number"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+    />
 
-      <input
-        type="number"
-        placeholder="Age"
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-      />
+    <input
+      type="number"
+      placeholder="Age"
+      value={age}
+      onChange={(e) => setAge(e.target.value)}
+    />
 
-      <input
-        type="text"
-        placeholder="Blood Group"
-        value={blood}
-        onChange={(e) => setBlood(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Blood Group"
+      value={blood}
+      onChange={(e) => setBlood(e.target.value)}
+    />
 
-      <input
-        type="text"
-        placeholder="Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+    />
 
-      <button onClick={handleSignup}>Sign Up</button>
+    <button onClick={handleSignup}>Sign Up</button>
 
-      <p>Already have an account?
-        <span onClick={() => navigate('/')}> Login</span>
-      </p>
-    </div>
-  );
+    <p>Already have an account?
+      <span onClick={() => navigate('/')}> Login</span>
+    </p>
+  </div>
+);
 }
 
 export default Signup;

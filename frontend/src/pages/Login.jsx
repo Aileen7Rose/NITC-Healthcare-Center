@@ -12,31 +12,31 @@ function Login() {
     console.log('Password:', password);
   }
 
-  return (
-    <div>
-      <h2>Login</h2>
+ return (
+  <div className="auth-container">
+    <h2>Login</h2>
 
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    <input
+      type="text"
+      placeholder="Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
 
-      <button onClick={handleLogin}>Login</button>
+    <button onClick={handleLogin}>Login</button>
 
-      <p>Don't have an account? 
-        <span onClick={() => navigate('/signup')}> Sign up</span>
-      </p>
-    </div>
-  );
+    <p>Don't have an account?
+      <span onClick={() => navigate('/signup')}> Sign up</span>
+    </p>
+  </div>
+);
 }
 
 export default Login;
