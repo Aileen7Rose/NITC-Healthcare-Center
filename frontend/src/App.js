@@ -12,6 +12,7 @@ import LogAvailability from './pages/LogAvailability';
 import AddReport from './pages/AddReport';
 import ViewPreferences from './pages/ViewPreferences';
 import ScheduleAppointment from './pages/ScheduleAppointment';
+import PatientProfile from './pages/PatientProfile';
 function App() {
   return (
     <BrowserRouter>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/add-report" element={<AddReport />} />
         <Route path="/view-preferences" element={<ViewPreferences />} />
         <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
+        <Route path="/patient-profile" element={<PatientProfile />} />
       </Routes>
     </BrowserRouter>
   );

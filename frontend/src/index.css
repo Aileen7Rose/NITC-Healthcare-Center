@@ -84,3 +84,14 @@ span {
 span:hover {
   color: #6F4D38;
 }
+select {
+  width: 100%;
+  padding: 10px 14px;
+  margin: 8px 0;
+  border: 1px solid #D5B893;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fff;
+  color: #25344F;
+  outline: none;
+}

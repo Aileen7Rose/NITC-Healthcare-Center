@@ -5,10 +5,7 @@ function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [age, setAge] = useState('');
-  const [blood, setBlood] = useState('');
-  const [address, setAddress] = useState('');
+  const [role, setRole] = useState('patient');
 
   const navigate = useNavigate();
 
@@ -16,72 +13,58 @@ function Signup() {
     console.log('Name:', name);
     console.log('Email:', email);
     console.log('Password:', password);
-    console.log('Phone:', phone);
-    console.log('Age:', age);
-    console.log('Blood:', blood);
-    console.log('Address:', address);
+    console.log('Role:', role);
+
+    if (role === 'patient') {
+      navigate('/patient-profile');
+    } else if (role === 'doctor') {
+      navigate('/doctor');
+    } else if (role === 'receptionist') {
+      navigate('/reception');
+    }
   }
 
   return (
-  <div className="auth-container">
-    <h2>Sign Up</h2>
+    <div className="auth-container">
+      <h2>Sign Up</h2>
 
-    <input
-      type="text"
-      placeholder="Full Name"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-    />
+      <input
+        type="text"
+        placeholder="Full Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-    <input
-      type="text"
-      placeholder="Email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-    />
+      <input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-    <input
-      type="password"
-      placeholder="Password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
-    <input
-      type="text"
-      placeholder="Phone Number"
-      value={phone}
-      onChange={(e) => setPhone(e.target.value)}
-    />
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+      >
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+        <option value="receptionist">Receptionist</option>
+      </select>
 
-    <input
-      type="number"
-      placeholder="Age"
-      value={age}
-      onChange={(e) => setAge(e.target.value)}
-    />
+      <button onClick={handleSignup}>Sign Up</button>
 
-    <input
-      type="text"
-      placeholder="Blood Group"
-      value={blood}
-      onChange={(e) => setBlood(e.target.value)}
-    />
-
-    <input
-      type="text"
-      placeholder="Address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-    />
-
-    <button onClick={handleSignup}>Sign Up</button>
-
-    <p>Already have an account?
-      <span onClick={() => navigate('/')}> Login</span>
-    </p>
-  </div>
-);
+      <p>Already have an account?
+        <span onClick={() => navigate('/')}> Login</span>
+      </p>
+    </div>
+  );
 }
 
 export default Signup;
