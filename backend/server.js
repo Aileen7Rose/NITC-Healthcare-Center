@@ -1,52 +1,425 @@
-const express= require('express');
+const express = require('express');
 const cors = require('cors');
-const db= require('./db'); // db contains MySQL so we can use it to run queries anywhere in this file
+const { Pool } = require('pg');
 require('dotenv').config();
-const app= express(); //creates server
+
+const app = express();
+
+// Database connection
+const db = new Pool({
+    user: 'postgres',
+    database: 'nitc healthcare',
+    host: '/var/run/postgresql',
+});
+
+// Test database connection
+db.connect((err, client, release) => {
+    if (err) {
+        console.error('❌ Database connection failed:', err.message);
+        console.error('   Make sure PostgreSQL is running');
+        console.error('   Try: sudo service postgresql start');
+    } else {
+        console.log('✅ Connected to PostgreSQL database');
+        release();
+    }
+});
+
+// Middleware
 app.use(cors());
-app.use(express.json());// middleware applied to every request
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('API is running');
-});
-app.get('/doctors', (req, res)=>{
-    const query= 'SELECT D_id, D_name, D_spec, D_phone FROM doctor'; // stores sql query as a string
-    db.query(query, (err, results)=>{
-        if(err) return res.status(500).json({error: err.message});
-        res.json(results); // query sends results back as json to whoever made the request
-    });
+// ============= AUTH ROUTES =============
+
+// Signup route with bcrypt
+app.post('/api/auth/signup', async (req, res) => {
+    const { name, email, password, role } = req.body;
+    
+    console.log('📝 Signup attempt:', { name, email, role });
+    
+    try {
+        const bcrypt = require('bcrypt');
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Check if user exists
+        let existingUser = null;
+        
+        if (role === 'patient') {
+            const result = await db.query(
+                'SELECT P_id FROM patient WHERE P_mail = $1',
+                [email]
+            );
+            existingUser = result.rows[0];
+        } else if (role === 'doctor') {
+            const result = await db.query(
+                'SELECT D_id FROM doctor WHERE D_mail = $1',
+                [email]
+            );
+            existingUser = result.rows[0];
+        } else if (role === 'receptionist') {
+            const result = await db.query(
+                'SELECT R_id FROM receptionist WHERE R_mail = $1',
+                [email]
+            );
+            existingUser = result.rows[0];
+        }
+        
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        
+        let result;
+        let userId;
+        
+        if (role === 'patient') {
+            result = await db.query(
+                'INSERT INTO patient (P_name, P_mail, P_password) VALUES ($1, $2, $3) RETURNING P_id',
+                [name, email, hashedPassword]
+            );
+            userId = result.rows[0].p_id;
+        } else if (role === 'doctor') {
+            result = await db.query(
+                'INSERT INTO doctor (D_name, D_mail, D_password) VALUES ($1, $2, $3) RETURNING D_id',
+                [name, email, hashedPassword]
+            );
+            userId = result.rows[0].d_id;
+        } else if (role === 'receptionist') {
+            result = await db.query(
+                'INSERT INTO receptionist (R_name, R_mail, R_password) VALUES ($1, $2, $3) RETURNING R_id',
+                [name, email, hashedPassword]
+            );
+            userId = result.rows[0].r_id;
+        } else {
+            return res.status(400).json({ message: 'Invalid role' });
+        }
+        
+        const jwt = require('jsonwebtoken');
+        const token = jwt.sign(
+            { id: userId, role: role },
+            process.env.JWT_SECRET || 'your_secret_key',
+            { expiresIn: '1h' }
+        );
+        
+        res.status(201).json({
+            success: true,
+            id: userId,
+            name,
+            email,
+            role,
+            token
+        });
+        
+    } catch (err) {
+        console.error('❌ Signup error:', err);
+        res.status(500).json({ message: err.message });
+    }
 });
 
-app.post('/preference', (req, res)=>{
-    const { P_id, Preference_date, Preference_time } = req.body; //destructuring= extracting values from an object
-    if(!P_id || !Preference_date || !Preference_time){
-        return res.status(400).json({error: 'Missing required fields'}); //input validation
+// Login route with bcrypt
+app.post('/api/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    console.log('🔐 Login attempt:', { email });
+    
+    try {
+        const bcrypt = require('bcrypt');
+        
+        // Check patient table
+        let result = await db.query(
+            `SELECT P_id as id, P_name as name, P_mail as email, P_password as password, 'patient' as role 
+             FROM patient WHERE P_mail = $1`,
+            [email]
+        );
+        
+        let user = result.rows[0];
+        
+        if (!user) {
+            result = await db.query(
+                `SELECT D_id as id, D_name as name, D_phone as email, D_password as password, 'doctor' as role 
+                 FROM doctor WHERE D_mail = $1`,
+                [email]
+            );
+            user = result.rows[0];
+        }
+        
+        if (!user) {
+            result = await db.query(
+                `SELECT R_id as id, R_name as name, R_mail as email, R_password as password, 'receptionist' as role 
+                 FROM receptionist WHERE R_mail = $1`,
+                [email]
+            );
+            user = result.rows[0];
+        }
+        
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        
+        const jwt = require('jsonwebtoken');
+        const token = jwt.sign(
+            { id: user.id, role: user.role },
+            process.env.JWT_SECRET || 'your_secret_key',
+            { expiresIn: '1h' }
+        );
+        
+        res.json({
+            success: true,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token
+        });
+        
+    } catch (err) {
+        console.error('❌ Login error:', err);
+        res.status(500).json({ message: err.message });
     }
-    const query=  `INSERT INTO preference (P_id, Preference_date, Preference_time, Preference_status) VALUES (?, ?, ?, 'Pending')`;
-    db.query(query, [P_id, Preference_date, Preference_time], (err, results) => {
-        if(err) return res.status(500).json({error: err.message });
-        res.json({message: 'Preference added successfully', id: results.insertId }); // results.insertId is auto generated id of newly created row for frontend
+});
+
+// ============= OTHER API ROUTES =============
+
+app.get('/', (req, res) => {
+    res.send('API is running! 🚀');
+});
+
+app.get('/api/test', async (req, res) => {
+    try {
+        const result = await db.query('SELECT NOW()');
+        res.json({ success: true, time: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get all doctors
+app.get('/api/doctors', async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT 
+                d.D_id, 
+                d.D_name, 
+                d.D_spec, 
+                d.D_mail, 
+                TO_CHAR(da.available_date, 'DD Mon YYYY') as available_date,  
+                da.enter_time, 
+                da.leave_time 
+            FROM doctor d
+            JOIN doctor_availability da ON da.D_id = d.D_id
+            WHERE da.available_date >= CURRENT_DATE
+            AND da.leave_time > CURRENT_TIME
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error in /api/doctors:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+// Get patient reports
+app.get('/api/reports/:patientId', async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        const result = await db.query(
+            `SELECT r.report_id, r.diagnosis, r.prescription, r.test_results, d.D_name as doctor_name
+             FROM reports r
+             JOIN doctor d ON r.D_id = d.D_id
+             WHERE r.P_id = $1
+             ORDER BY r.report_id DESC`,
+            [patientId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching reports:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Add report
+app.post('/api/reports', async (req, res) => {
+    try {
+        const { P_id, D_id, Diagnosis, Prescription, Test_results } = req.body;
+        const result = await db.query(
+            `INSERT INTO reports (P_id, D_id, Diagnosis, Prescription, Test_results)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING report_id`,
+            [P_id, D_id, Diagnosis, Prescription, Test_results]
+        );
+        res.json({ success: true, report_id: result.rows[0].report_id });
+    } catch (err) {
+        console.error('Error adding report:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Log availability
+app.post('/api/availability', async (req, res) => {
+    try {
+        const { D_id, Available_date, Enter_time, Leave_time } = req.body;
+        const result = await db.query(
+            `INSERT INTO doctor_availability (D_id, Available_date, Enter_time, Leave_time)
+             VALUES ($1, $2, $3, $4)
+             RETURNING availability_id`,
+            [D_id, Available_date, Enter_time, Leave_time]
+        );
+        res.json({ success: true, availability_id: result.rows[0].availability_id });
+    } catch (err) {
+        console.error('Error logging availability:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// Add preference
+app.post('/api/preferences', async (req, res) => {
+    try {
+        const { P_id, Preference_date, Preference_time } = req.body;
+        const result = await db.query(
+            `INSERT INTO preference (P_id, Preference_date, Preference_time, Preference_status)
+             VALUES ($1, $2, $3, 'pending')
+             RETURNING preference_id`,
+            [P_id, Preference_date, Preference_time]
+        );
+        res.json({ success: true, preference_id: result.rows[0].preference_id });
+    } catch (err) {
+        console.error('Error adding preference:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get preferences with patient names
+app.get('/api/preferences', async (req, res) => {
+    try {
+        const result = await db.query(
+            `SELECT p.preference_id, pt.P_id, TO_CHAR(p.preference_date, 'DD Mon YYYY') as preference_date , p.preference_time, p.preference_status,
+                    pt.P_name as patient_name,
+                    pt.P_id as patient_id
+             FROM preference p
+             JOIN patient pt ON p.P_id = pt.P_id
+             WHERE p.preference_status = 'pending'
+             ORDER BY p.preference_date, p.preference_time`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching preferences:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Schedule appointment
+app.post('/api/appointments', async (req, res) => {
+    try {
+        const { P_id, D_id, R_id, Appointment_date, Appointment_time } = req.body;
+        const result = await db.query(
+            `INSERT INTO appointment (P_id, D_id, R_id, Appointment_date, Appointment_time)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING Appointment_id`,
+            [P_id, D_id, R_id, Appointment_date, Appointment_time]
+        );
+        
+        // Update preference status to completed
+        await db.query(
+            `UPDATE preference 
+             SET Preference_status = 'completed'
+             WHERE P_id = $1`,
+            [P_id]
+        );
+        
+        res.json({ success: true, appointment_id: result.rows[0].appointment_id });
+    } catch (err) {
+        console.error('Error scheduling appointment:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+//get scheduled appointment info
+app.get('/api/upcoming/:patientId', async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        const result = await db.query(
+            `SELECT a.appointment_id, 
+                    TO_CHAR(a.appointment_date, 'DD Mon YYYY') as appointment_date,
+                    a.appointment_time,
+                    d.D_name as doctor_name,
+                    d.D_spec as doctor_spec
+             FROM appointment a
+             JOIN doctor d ON a.D_id = d.D_id
+             WHERE a.P_id = $1
+             AND a.appointment_date >= CURRENT_DATE
+             AND a.appointment_time > CURRENT_TIME
+             AND a.appointment_status = 'Scheduled'
+             ORDER BY a.appointment_date, a.appointment_time`,
+            [patientId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching upcoming appointments:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update patient profile
+app.put('/api/patients/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { P_phone, P_age, P_blood, P_address } = req.body;
+        
+        // Check if patient exists
+        const checkResult = await db.query('SELECT P_id FROM patient WHERE P_id = $1', [id]);
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Patient not found' });
+        }
+        
+        const result = await db.query(
+            `UPDATE patient 
+             SET P_phone = COALESCE($1, P_phone),
+                 P_age = COALESCE($2, P_age),
+                 P_blood = COALESCE($3, P_blood),
+                 P_address = COALESCE($4, P_address)
+             WHERE P_id = $5
+             RETURNING P_id`,
+            [P_phone, P_age, P_blood, P_address, id]
+        );
+        
+        res.json({ success: true, patient_id: result.rows[0].p_id });
+    } catch (err) {
+        console.error('Error updating patient:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+const PORT = process.env.PORT || 5000;
+
+// Error handling for the server
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`✅ Test: http://localhost:${PORT}/`);
+    console.log(`✅ DB Test: http://localhost:${PORT}/api/test`);
+    console.log(`✅ Auth endpoints available at /api/auth/signup and /api/auth/login`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use. Please kill the process using this port or use a different port.`);
+        process.exit(1);
+    } else {
+        console.error('❌ Server error:', error);
+    }
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+    console.log('\n🛑 Shutting down server...');
+    server.close(() => {
+        console.log('✅ Server shut down');
+        db.end(() => {
+            console.log('✅ Database connection closed');
+            process.exit(0);
+        });
     });
 });
-//view reports for a patient
-app.get('/reports/:P_id', (req, res) => {
-    const { P_id }= req.params;
-    const query= 'SELECT * FROM reports WHERE P_id = ?';
-    db.query(query, [P_id], (err, results) =>{
-        if (err) return res.status(500).json({error: err.message});
-        res.json(results);
-    });
-});
-//view doc availability
-app.get('/availability', (req, res)=> {
-    const query= 'SELECT * FROM doctor_availability';
-    db.query(query, (err, results)=>{
-        if(err) return res.status(500).json({error: err.message});
-        res.json(results);
-    });
-});
-const PORT= process.env.PORT || 3000;
-app.listen(PORT, '127.0.0.1', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-}); // app.listen starts the server

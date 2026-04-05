@@ -12,6 +12,7 @@ function PatientDashboard() {
         <button className="btn-slate" onClick={() => navigate('/doctors')}>View Doctors</button>
         <button className="btn-coffee" onClick={() => navigate('/preference')}>Book Preference</button>
         <button className="btn-danger" onClick={() => navigate('/reports')}>My Reports</button>
+        <button className="btn-success" onClick={() => navigate('/upcoming')}>Upcoming Appointments</button>
       </div>
     </div>
   );

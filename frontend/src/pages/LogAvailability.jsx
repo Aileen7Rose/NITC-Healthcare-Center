@@ -1,24 +1,52 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Add this import
 
 function LogAvailability() {
   const [D_id, setDid] = useState('');
   const [Available_date, setAvailableDate] = useState('');
   const [Enter_time, setEnterTime] = useState('');
   const [Leave_time, setLeaveTime] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  function handleSubmit() {
-    console.log('D_id:', D_id);
-    console.log('Available_date:', Available_date);
-    console.log('Enter_time:', Enter_time);
-    console.log('Leave_time:', Leave_time);
+  const navigate = useNavigate();
+  const API_URL = 'http://localhost:5000/api'; // Add this
+
+  async function handleSubmit() {
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await axios.post(`${API_URL}/availability`, {
+        D_id: parseInt(D_id),
+        Available_date,
+        Enter_time,
+        Leave_time
+      });
+      
+      console.log('Availability saved:', response.data);
+      setSuccess('Availability logged successfully!');
+      
+      setTimeout(() => {
+        navigate('/doctor');
+      }, 2000);
+      
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to log availability');
+      console.error('Error:', err);
+    }
   }
 
   return (
     <div className="page-container">
       <h2 className="page-header">Log Availability</h2>
+      
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
 
       <input
-        type="text"
+        type="number"
         placeholder="Doctor ID"
         value={D_id}
         onChange={(e) => setDid(e.target.value)}

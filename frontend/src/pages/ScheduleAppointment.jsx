@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Add this import
 
 function ScheduleAppointment() {
   const [P_id, setPid] = useState('');
@@ -6,35 +8,61 @@ function ScheduleAppointment() {
   const [R_id, setRid] = useState('');
   const [Appointment_date, setAppointmentDate] = useState('');
   const [Appointment_time, setAppointmentTime] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  function handleSubmit() {
-    console.log('P_id:', P_id);
-    console.log('D_id:', D_id);
-    console.log('R_id:', R_id);
-    console.log('Appointment_date:', Appointment_date);
-    console.log('Appointment_time:', Appointment_time);
+  const navigate = useNavigate();
+  const API_URL = 'http://localhost:5000/api'; // Add this
+
+  async function handleSubmit() {
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await axios.post(`${API_URL}/appointments`, {
+        P_id: parseInt(P_id),
+        D_id: parseInt(D_id),
+        R_id: parseInt(R_id),
+        Appointment_date,
+        Appointment_time
+      });
+      
+      console.log('Appointment scheduled:', response.data);
+      setSuccess('Appointment scheduled successfully!');
+      
+      setTimeout(() => {
+        navigate('/reception');
+      }, 2000);
+      
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to schedule appointment');
+      console.error('Error:', err);
+    }
   }
 
   return (
     <div className="page-container">
       <h2 className="page-header">Schedule Appointment</h2>
+      
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
 
       <input
-        type="text"
+        type="number"
         placeholder="Patient ID"
         value={P_id}
         onChange={(e) => setPid(e.target.value)}
       />
 
       <input
-        type="text"
+        type="number"
         placeholder="Doctor ID"
         value={D_id}
         onChange={(e) => setDid(e.target.value)}
       />
 
       <input
-        type="text"
+        type="number"
         placeholder="Receptionist ID"
         value={R_id}
         onChange={(e) => setRid(e.target.value)}

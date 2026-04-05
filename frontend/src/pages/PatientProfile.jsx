@@ -1,26 +1,48 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Add this import
 
 function PatientProfile() {
   const [phone, setPhone] = useState('');
   const [age, setAge] = useState('');
   const [blood, setBlood] = useState('');
   const [address, setAddress] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const API_URL = 'http://localhost:5000/api'; // Add this
+  const patientId = localStorage.getItem('userId'); // Get logged-in patient ID
 
-  function handleSubmit() {
-    console.log('Phone:', phone);
-    console.log('Age:', age);
-    console.log('Blood:', blood);
-    console.log('Address:', address);
-    navigate('/patient');
+  async function handleSubmit() {
+    setError('');
+    setLoading(true);
+    
+    try {
+      const response = await axios.put(`${API_URL}/patients/${patientId}`, {
+        P_phone: phone,
+        P_age: parseInt(age),
+        P_blood: blood,
+        P_address: address
+      });
+      
+      console.log('Profile saved:', response.data);
+      navigate('/patient');
+      
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to save profile');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="auth-container">
       <h2>Complete Your Profile</h2>
       <p>Please fill in your details to continue</p>
+      
+      {error && <div className="error-message">{error}</div>}
 
       <input
         type="text"
@@ -50,7 +72,9 @@ function PatientProfile() {
         onChange={(e) => setAddress(e.target.value)}
       />
 
-      <button onClick={handleSubmit}>Save Profile</button>
+      <button onClick={handleSubmit} disabled={loading}>
+        {loading ? 'Saving...' : 'Save Profile'}
+      </button>
     </div>
   );
 }

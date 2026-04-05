@@ -1,16 +1,23 @@
-const mysql= require('mysql2');
-require('dotenv').config(); // config activates the dotenv package that reads our .env file
-const db= mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '',
-    database: process.env.DB_NAME || 'nitc_healthcare'
+const { Pool } = require('pg');
+
+// Use the same method that works with sudo -u postgres
+const db = new Pool({
+    user: 'postgres',
+    database: 'nitc healthcare',
+    // Use the default socket path
+    host: '/var/run/postgresql',
+    // No password
 });
-db.connect((err)=> { // err is a callback fn- code that runs after the db connection attempt is over
-    if(err){
-        console.error('DB connection failed:', err.message);
-        return;
+
+// Test connection
+db.connect((err, client, release) => {
+    if (err) {
+        console.error('❌ Database connection failed:', err.message);
+        console.error('   But server will continue running');
+    } else {
+        console.log('✅ Connected to PostgreSQL database');
+        release();
     }
-    console.log('Connected to MySQL database');
 });
-module.exports= db; //share db connection w other files
+
+module.exports = db;

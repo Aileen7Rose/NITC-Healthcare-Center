@@ -1,0 +1,4 @@
+◇ injecting env (7) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+◇ injecting env (0) from .env // tip: ⌘ enable debugging { debug: true }
+🚀 Server running on http://localhost:5000
+✅ Connected to PostgreSQL database

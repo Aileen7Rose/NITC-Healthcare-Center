@@ -1,0 +1,24 @@
+{
+  "name": "nitc-healthcare-center",
+  "version": "1.0.0",
+  "description": "Currently, students at the NITC Health Centre must manually search for their roll number in physical record sheets before consulting the doctor, which is time-consuming and inefficient. A database system can store and retrieve student records digitally, making patient identification and record management faster and more organized.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aileen7Rose/NITC-Healthcare-Center.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Aileen7Rose/NITC-Healthcare-Center/issues"
+  },
+  "homepage": "https://github.com/Aileen7Rose/NITC-Healthcare-Center#readme",
+  "dependencies": {
+    "mysql2": "^3.20.0"
+  }
+}
