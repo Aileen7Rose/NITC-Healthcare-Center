@@ -6,7 +6,7 @@ function UpcomingAppointments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'http://localhost:3001/api'; //5000
 
   useEffect(() => {
     fetchAppointments();

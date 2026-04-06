@@ -10,7 +10,7 @@ function Signup() {
   const [error, setError] = useState(''); // Add this
 
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5000/api'; // Add this
+  const API_URL = 'http://localhost:3001/api'; //5000
 
   async function handleSignup() {
     console.log('🔵 Signup button clicked!'); // Add this line
@@ -48,43 +48,85 @@ function Signup() {
     }
   }
 
+  // return (
+  //   <div className="auth-container">
+  //     <h2>Sign Up</h2>
+  //     {error && <div className="error-message">{error}</div>}
+      
+  //     <input
+  //       type="text"
+  //       placeholder="Full Name"
+  //       value={name}
+  //       onChange={(e) => setName(e.target.value)}
+  //     />
+
+  //     <input
+  //       type="text"
+  //       placeholder="Email"
+  //       value={email}
+  //       onChange={(e) => setEmail(e.target.value)}
+  //     />
+
+  //     <input
+  //       type="password"
+  //       placeholder="Password"
+  //       value={password}
+  //       onChange={(e) => setPassword(e.target.value)}
+  //     />
+
+  //     <select
+  //       value={role}
+  //       onChange={(e) => setRole(e.target.value)}
+  //     >
+  //       <option value="patient">Patient</option>
+  //       <option value="doctor">Doctor</option>
+  //       <option value="receptionist">Receptionist</option>
+  //     </select>
+
+  //     <button onClick={handleSignup}>Sign Up</button>
+
+  //     <p>Already have an account?
+  //       <span onClick={() => navigate('/')}> Login</span>
+  //     </p>
+  //   </div>
+  // );
   return (
     <div className="auth-container">
-      <h2>Sign Up</h2>
+  
+      {/* Hospital photo */}
+      <div style={{ marginBottom: '20px', borderRadius: '10px', overflow: 'hidden', height: '140px' }}>
+        <img
+          src="https://nitc.ac.in/imgserver/uploads/attachments/Ed__a551639b-9eea-4e07-a978-0d2ed0715b85_.jpg"
+          alt="NITC Healthcare"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+        />
+      </div>
+  
+      {/* Logo + Title */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '24px' }}>
+        <img
+          src="https://upload.wikimedia.org/wikipedia/en/a/ae/Correct_Logo_of_NIT_Calicut.svg"
+          alt="NITC Logo"
+          style={{ width: '48px', height: '48px' }}
+        />
+        <div>
+          <h2 style={{ margin: 0, fontSize: '20px' }}>NITC Healthcare</h2>
+          <p style={{ margin: 0, fontSize: '12px', color: '#1d4ed8' }}>Hospital Management System</p>
+        </div>
+      </div>
+  
       {error && <div className="error-message">{error}</div>}
-      
-      <input
-        type="text"
-        placeholder="Full Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-      >
+  
+      <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+      <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <select value={role} onChange={(e) => setRole(e.target.value)}>
         <option value="patient">Patient</option>
         <option value="doctor">Doctor</option>
         <option value="receptionist">Receptionist</option>
       </select>
-
       <button onClick={handleSignup}>Sign Up</button>
-
+  
       <p>Already have an account?
         <span onClick={() => navigate('/')}> Login</span>
       </p>

@@ -1,66 +1,67 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios'; // Add this import
+import axios from 'axios';
 
 function ViewDoctors() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:5000/api'; // Add this
+  const API_URL = 'http://localhost:3001/api';
 
-  useEffect(() => {
-    fetchDoctors();
-  }, []);
+  useEffect(() => { fetchDoctors(); }, []);
 
   async function fetchDoctors() {
     try {
       const response = await axios.get(`${API_URL}/doctors`);
-      console.log('Doctors:', response.data);
       setDoctors(response.data);
     } catch (err) {
       setError('Failed to load doctors');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   }
 
-  
   if (loading) return <div className="loading">Loading doctors...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="page-container">
-      <h2 className="page-header">Available Doctors</h2>
+      <div className="page-header">
+        <h2>Available Doctors</h2>
+        <p>{doctors.length} doctor{doctors.length !== 1 ? 's' : ''} on record</p>
+      </div>
+
       {doctors.length === 0 ? (
         <p>No doctors found</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Doctor Id</th>
-              <th>Specialization</th>
-              <th>Mail</th>
-              <th>Latest Available Date</th>
-              <th>Enter Time</th>
-              <th>Leave Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {doctors.map((doctor) => (
-              <tr key={doctor.d_id}>
-                <td>{doctor.d_name}</td>
-                <td>{doctor.d_id}</td>
-                <td>{doctor.d_spec || 'Not specified'}</td>
-                <td>{doctor.d_mail || 'N/A'}</td>
-                <td>{doctor.available_date || `N/A`}</td>
-                <td>{doctor.enter_time || `N/A`}</td>
-                <td>{doctor.leave_time || `N/A`}</td>
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Specialization</th>
+                <th>Email</th>
+                <th>Available Date</th>
+                <th>Enter</th>
+                <th>Leave</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {doctors.map((doctor) => (
+                <tr key={doctor.d_id}>
+                  <td className="td-name">{doctor.d_name}</td>
+                  <td><span className="id-badge">#{doctor.d_id}</span></td>
+                  <td><span className="tag">{doctor.d_spec || 'General'}</span></td>
+                  <td className="td-email">{doctor.d_mail || 'N/A'}</td>
+                  <td>{doctor.available_date || 'N/A'}</td>
+                  <td><span className="time-chip">{doctor.enter_time || 'N/A'}</span></td>
+                  <td><span className="time-chip">{doctor.leave_time || 'N/A'}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

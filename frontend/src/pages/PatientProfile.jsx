@@ -11,7 +11,7 @@ function PatientProfile() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5000/api'; // Add this
+  const API_URL = 'http://localhost:3001/api'; //5000
   const patientId = localStorage.getItem('userId'); // Get logged-in patient ID
 
   async function handleSubmit() {

@@ -7,9 +7,11 @@ const app = express();
 
 // Database connection
 const db = new Pool({
-    user: 'postgres',
-    database: 'nitc healthcare',
-    host: '/var/run/postgresql',
+    user: process.env.DB_USER || 'postgres',
+    database: process.env.DB_NAME || 'nitc healthcare',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    password: process.env.DB_PASS || null
 });
 
 // Test database connection
@@ -211,8 +213,7 @@ app.get('/api/doctors', async (req, res) => {
                 da.leave_time 
             FROM doctor d
             JOIN doctor_availability da ON da.D_id = d.D_id
-            WHERE da.available_date >= CURRENT_DATE
-            AND da.leave_time > CURRENT_TIME
+            WHERE da.available_date > CURRENT_DATE OR (da.available_date = CURRENT_DATE AND da.leave_time > CURRENT_TIME) 
         `);
         res.json(result.rows);
     } catch (err) {
@@ -349,10 +350,9 @@ app.get('/api/upcoming/:patientId', async (req, res) => {
              FROM appointment a
              JOIN doctor d ON a.D_id = d.D_id
              WHERE a.P_id = $1
-             AND a.appointment_date >= CURRENT_DATE
-             AND a.appointment_time > CURRENT_TIME
+             AND (a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) 
              AND a.appointment_status = 'Scheduled'
-             ORDER BY a.appointment_date, a.appointment_time`,
+             ORDER BY a.appointment_date, a.appointment_time;`,
             [patientId]
         );
         res.json(result.rows);

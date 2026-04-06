@@ -1,19 +1,17 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
-// Use the same method that works with sudo -u postgres
 const db = new Pool({
-    user: 'postgres',
-    database: 'nitc healthcare',
-    // Use the default socket path
-    host: '/var/run/postgresql',
-    // No password
+    user: process.env.DB_USER || process.env.USER,
+    database: process.env.DB_NAME || 'nitc healthcare',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    password: process.env.DB_PASS || null
 });
 
-// Test connection
 db.connect((err, client, release) => {
     if (err) {
         console.error('❌ Database connection failed:', err.message);
-        console.error('   But server will continue running');
     } else {
         console.log('✅ Connected to PostgreSQL database');
         release();

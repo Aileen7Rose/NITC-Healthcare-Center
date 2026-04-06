@@ -10,7 +10,7 @@ function PreferenceForm() {
   const [success, setSuccess] = useState('');
 
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5000/api'; // Add this
+  const API_URL = 'http://localhost:3001/api'; //5000
 
   async function handleSubmit() {
     setError('');
