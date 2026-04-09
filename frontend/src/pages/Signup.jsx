@@ -37,7 +37,7 @@ function Signup() {
       if (role === 'patient') {
         navigate('/patient-profile');
       } else if (role === 'doctor') {
-        navigate('/doctor');
+        navigate('/doctor-profile');
       } else if (role === 'receptionist') {
         navigate('/reception');
       }
@@ -133,5 +133,6 @@ function Signup() {
     </div>
   );
 }
+
 
 export default Signup;

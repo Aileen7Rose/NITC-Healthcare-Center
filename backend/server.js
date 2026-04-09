@@ -7,24 +7,22 @@ const app = express();
 
 // Database connection
 const db = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    database: process.env.DB_NAME || 'nitc healthcare',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    password: process.env.DB_PASS || null
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        require: true,
+        rejectUnauthorized: false,
+    },
 });
 
 // Test database connection
-db.connect((err, client, release) => {
-    if (err) {
-        console.error('❌ Database connection failed:', err.message);
-        console.error('   Make sure PostgreSQL is running');
-        console.error('   Try: sudo service postgresql start');
-    } else {
-        console.log('✅ Connected to PostgreSQL database');
-        release();
-    }
-});
+db.connect()
+    .then(client => {
+        console.log('✅ Connected to Neon PostgreSQL');
+        client.release();
+    })
+    .catch(err => {
+        console.error('❌ Database connection failed:', err);
+    });
 
 // Middleware
 app.use(cors());
@@ -137,7 +135,7 @@ app.post('/api/auth/login', async (req, res) => {
         
         if (!user) {
             result = await db.query(
-                `SELECT D_id as id, D_name as name, D_phone as email, D_password as password, 'doctor' as role 
+                `SELECT D_id as id, D_name as name, D_mail as email, D_password as password, 'doctor' as role 
                  FROM doctor WHERE D_mail = $1`,
                 [email]
             );
@@ -226,14 +224,15 @@ app.get('/api/reports/:patientId', async (req, res) => {
     try {
         const { patientId } = req.params;
         const result = await db.query(
-            `SELECT r.report_id, r.diagnosis, r.prescription, r.test_results, d.D_name as doctor_name
+            `SELECT r.report_id, r.diagnosis, r.prescription, r.test_results, d.d_name as doctor_name
              FROM reports r
-             JOIN doctor d ON r.D_id = d.D_id
-             WHERE r.P_id = $1
+             JOIN doctor d ON r.d_id = d.d_id
+             WHERE r.p_id = $1
              ORDER BY r.report_id DESC`,
             [patientId]
         );
-        res.json(result.rows);
+        res.json(patientId);
+        //res.json(result.rows);
     } catch (err) {
         console.error('Error fetching reports:', err);
         res.status(500).json({ error: err.message });
@@ -388,6 +387,34 @@ app.put('/api/patients/:id', async (req, res) => {
         res.json({ success: true, patient_id: result.rows[0].p_id });
     } catch (err) {
         console.error('Error updating patient:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update patient profile
+app.put('/api/doctors/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { d_phone, d_spec } = req.body;
+        
+        // Check if patient exists
+        const checkResult = await db.query('SELECT d_id FROM doctor WHERE d_id = $1', [id]);
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Doctor not found' });
+        }
+        
+        const result = await db.query(
+            `UPDATE Doctor 
+             SET d_phone = COALESCE($1, d_phone),
+                 d_spec = COALESCE($2, d_spec)
+             WHERE d_id = $3
+             RETURNING d_id`,
+            [d_phone, d_spec, id]
+        );
+        
+        res.json({ success: true, doctor_id: result.rows[0].d_id });
+    } catch (err) {
+        console.error('Error updating Doctor:', err);
         res.status(500).json({ error: err.message });
     }
 });
