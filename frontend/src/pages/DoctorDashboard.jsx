@@ -13,6 +13,7 @@ function DoctorDashboard() {
       <div className="nav-links">
         <button className="btn-coffee" onClick={() => navigate('/log-availability')}>Log Availability</button>
         <button className="btn-slate" onClick={() => navigate('/add-report')}>Add Report</button>
+        <button className="btn-slate" onClick={() => navigate('/doctor-appointments')}>View Appointments</button>
       </div>
     </div>
   );

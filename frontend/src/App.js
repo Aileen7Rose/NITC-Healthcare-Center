@@ -15,6 +15,7 @@ import ScheduleAppointment from './pages/ScheduleAppointment';
 import PatientProfile from './pages/PatientProfile';
 import DoctorProfile from './pages/DoctorProfile';
 import UpcomingAppointments from './pages/UpcomingAppointment';
+import DoctorAppointments from './pages/DoctorAppointments';
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +35,7 @@ function App() {
         <Route path="/patient-profile" element={<PatientProfile />} />
         <Route path="/doctor-profile" element={<DoctorProfile />} />
         <Route path="/upcoming" element={<UpcomingAppointments />} />
+        <Route path="/doctor-appointments" elements={<DoctorAppointments />} />
       </Routes>
     </BrowserRouter>
   );
