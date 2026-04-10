@@ -420,6 +420,28 @@ app.put('/api/doctors/:id', async (req, res) => {
     }
 });
 
+app.get('/api/appointments/:doctorId', async (req, res)=>{
+    try{
+        const { doctorId } = req.params;
+        const result = await db.query(
+            `SELECT a.appointment_id,
+            TO_CHAR(a.appointment_date, 'DD Mon YYYY') as appointment_date,
+            a.appointment_time,
+            p.P_name as patient_name,
+            p.P_id as patient_id
+     FROM appointment a
+     JOIN patient p ON a.P_id = p.P_id
+     WHERE a.D_id = $1
+     ORDER BY a.appointment_date, a.appointment_time`,
+    [doctorId]
+
+        );
+        res.json(result.rows);
+    } catch (err){
+        console.error('Error fetching doctor appointments:', err);
+        res.status(500).json({error: err.message });
+    }
+});
 const PORT = process.env.PORT || 5000;
 
 // Error handling for the server
