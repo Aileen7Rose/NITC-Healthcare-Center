@@ -18,7 +18,7 @@ function AddReport() {
     setSuccess('');
     
     try {
-      const response = await axios.post(`${API_URL}/api/reports`, {
+      const response = await axios.post(`${API_URL}/reports`, {
         P_id: parseInt(P_id),
         D_id: parseInt(D_id),
         Diagnosis,
