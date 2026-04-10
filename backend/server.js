@@ -214,7 +214,9 @@ app.get('/api/doctors', async (req, res) => {
                 da.leave_time 
             FROM doctor d
             JOIN doctor_availability da ON da.D_id = d.D_id
-            WHERE da.available_date > CURRENT_DATE OR (da.available_date = CURRENT_DATE AND da.leave_time > CURRENT_TIME) 
+            WHERE da.available_date > (NOW() AT TIME ZONE 'Asia/Kolkata')::date
+                OR (da.available_date = (NOW() AT TIME ZONE 'Asia/Kolkata')::date 
+                AND da.leave_time > (NOW() AT TIME ZONE 'Asia/Kolkata')::time)
         `);
         res.json(result.rows);
     } catch (err) {
@@ -353,7 +355,9 @@ app.get('/api/upcoming/:patientId', async (req, res) => {
              FROM appointment a
              JOIN doctor d ON a.D_id = d.D_id
              WHERE a.P_id = $1
-             AND ((a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) )
+             AND (a.appointment_date > (NOW() AT TIME ZONE 'Asia/Kolkata')::date
+                    OR (a.appointment_date = (NOW() AT TIME ZONE 'Asia/Kolkata')::date 
+                    AND a.appointment_time > (NOW() AT TIME ZONE 'Asia/Kolkata')::time))
              AND a.appointment_status = 'Scheduled'
              ORDER BY a.appointment_date, a.appointment_time;`,
             [patientId]
@@ -435,7 +439,9 @@ app.get('/api/appointments/:doctorId', async (req, res)=>{
      FROM appointment a
      JOIN patient p ON a.P_id = p.P_id
      WHERE a.D_id = $1
-     AND ((a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) )
+     AND (a.appointment_date > (NOW() AT TIME ZONE 'Asia/Kolkata')::date
+        OR (a.appointment_date = (NOW() AT TIME ZONE 'Asia/Kolkata')::date 
+        AND a.appointment_time > (NOW() AT TIME ZONE 'Asia/Kolkata')::time) )
      ORDER BY a.appointment_date, a.appointment_time`,
     [doctorId]
 
