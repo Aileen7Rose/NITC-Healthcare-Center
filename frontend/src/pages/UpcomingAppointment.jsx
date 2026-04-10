@@ -6,25 +6,24 @@ function UpcomingAppointments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:3001/api'; //5000
+  const API_URL =  process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
-  async function fetchAppointments() {
-    try {
-      const userId = localStorage.getItem('userId');
-      const response = await axios.get(`${API_URL}/upcoming/${userId}`);
-      console.log('Appointments:', response.data);
-      setAppointments(response.data);
-    } catch (err) {
-      setError('Failed to load appointments');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+   useEffect(() => {
+    async function fetchAppointments() {
+      try {
+        const userId = localStorage.getItem('userId');
+        const response = await axios.get(`${API_URL}/upcoming/${userId}`);
+        console.log('Appointments:', response.data);
+        setAppointments(response.data);
+      } catch (err) {
+        setError('Failed to load appointments');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
+    fetchAppointments();
+  }, [API_URL]);
 
   if (loading) return <div className="loading">Loading appointments...</div>;
   if (error) return <div className="error">{error}</div>;

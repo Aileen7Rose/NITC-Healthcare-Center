@@ -6,20 +6,22 @@ function ViewDoctors() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:3001/api';
+  const API_URL =  process.env.REACT_APP_API_URL;
 
-  useEffect(() => { fetchDoctors(); }, []);
 
-  async function fetchDoctors() {
-    try {
-      const response = await axios.get(`${API_URL}/doctors`);
-      setDoctors(response.data);
-    } catch (err) {
-      setError('Failed to load doctors');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function fetchDoctors() {
+      try {
+        const response = await axios.get(`${API_URL}/doctors`);
+        setDoctors(response.data);
+      } catch (err) {
+        setError('Failed to load doctors');
+      } finally {
+        setLoading(false);
+      }
     }
-  }
+    fetchDoctors();
+  }, [API_URL]);
 
   if (loading) return <div className="loading">Loading doctors...</div>;
   if (error) return <div className="error-message">{error}</div>;

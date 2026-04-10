@@ -6,25 +6,22 @@ function ViewPreferences() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:3001/api'; //5000
-
-  useEffect(() => {
-    fetchPreferences();
-  }, []);
-
-  async function fetchPreferences() {
-    try {
-      const response = await axios.get(`${API_URL}/preferences`);
-      console.log('Preferences:', response.data);
-      setPreferences(response.data);
-    } catch (err) {
-      setError('Failed to load preferences');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+  const API_URL =  process.env.REACT_APP_API_URL;
+   useEffect(() => {
+    async function fetchPreferences() {
+      try {
+        const response = await axios.get(`${API_URL}/preferences`);
+        console.log('Preferences:', response.data);
+        setPreferences(response.data);
+      } catch (err) {
+        setError('Failed to load preferences');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
-
+    fetchPreferences();
+  }, [API_URL]);
   if (loading) return <div className="loading">Loading preferences...</div>;
   if (error) return <div className="error">{error}</div>;
 

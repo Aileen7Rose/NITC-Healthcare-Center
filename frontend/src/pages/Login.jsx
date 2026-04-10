@@ -8,7 +8,7 @@ function Login() {
   const [error, setError] = useState(''); // Add this for error handling
   const navigate = useNavigate();
 
-  const API_URL = 'http://localhost:3001/api'; //5000
+  const API_URL =  process.env.REACT_APP_API_URL;
 
   async function handleLogin() {
     setError(''); // Clear previous errors

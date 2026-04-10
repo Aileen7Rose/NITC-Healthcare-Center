@@ -6,26 +6,25 @@ function ViewReports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:3001/api'; //5000
+  const API_URL =  process.env.REACT_APP_API_URL;
   const patientId = localStorage.getItem('userId'); // Get logged-in patient ID
-
   useEffect(() => {
     if (!patientId) return;
+
     async function fetchReports() {
-    try {
-      const response = await axios.get(`${API_URL}/reports/${patientId}`);
-      console.log('Reports:', response.data);
-      setReports(Array.isArray(response.data) ? response.data : []);
-    } catch (err) {
-      setError('Failed to load reports');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
+      try {
+        const response = await axios.get(`${API_URL}/reports/${patientId}`);
+        console.log('Reports:', response.data);
+        setReports(Array.isArray(response.data) ? response.data : []);
+      } catch (err) {
+        setError('Failed to load reports');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchReports();
-  }, [patientId]);
-
+  }, [patientId, API_URL]);
   
 
   if (loading) return <div className="loading">Loading reports...</div>;
