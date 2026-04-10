@@ -9,7 +9,7 @@ function DoctorProfile() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:3001/api'; //5000
+  const API_URL = 'https://nitc-healthcare-center-1cyp.onrender.com/api'; //5000
   const doctorId = localStorage.getItem('userId'); // doctor id
 
   async function handleSubmit() {

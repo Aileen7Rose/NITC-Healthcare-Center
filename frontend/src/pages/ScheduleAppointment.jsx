@@ -12,7 +12,7 @@ function ScheduleAppointment() {
   const [success, setSuccess] = useState('');
 
   const navigate = useNavigate();
-  const API_URL ='http://localhost:3001/api'; //5000
+  const API_URL = 'https://nitc-healthcare-center-1cyp.onrender.com/api'; //5000
 
   async function handleSubmit() {
     setError('');

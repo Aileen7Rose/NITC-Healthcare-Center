@@ -6,7 +6,7 @@ function DoctorAppointments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:3001/api';
+  const API_URL = 'https://nitc-healthcare-center-1cyp.onrender.com/api';
   const doctorId = localStorage.getItem('userId');
 
   useEffect(() => {
