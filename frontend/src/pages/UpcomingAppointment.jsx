@@ -6,7 +6,7 @@ function UpcomingAppointments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_URL =  process.env.REACT_APP_API_URL;
+  const API_URL = 'http://localhost:3001/api'; //5000
 
    useEffect(() => {
     async function fetchAppointments() {

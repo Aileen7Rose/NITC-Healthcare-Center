@@ -10,7 +10,7 @@ function Signup() {
   const [error, setError] = useState(''); // Add this
 
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = 'http://localhost:3001/api'; //5000
 
   async function handleSignup() {
     console.log('🔵 Signup button clicked!'); // Add this line
