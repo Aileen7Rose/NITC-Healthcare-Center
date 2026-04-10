@@ -10,15 +10,15 @@ function Login() {
 
   const API_URL =  process.env.REACT_APP_API_URL;
 
+  console.log("LOGIN URL USED:", `${API_URL}/api/auth/login`);
   async function handleLogin() {
     setError(''); // Clear previous errors
     
     try {
       const response = await axios.post(`${API_URL}/api/auth/login`, {
-        email,
-        password
+      email,
+      password
       });
-      
       console.log('Login response:', response.data);
       
       // Store user data
