@@ -353,7 +353,7 @@ app.get('/api/upcoming/:patientId', async (req, res) => {
              FROM appointment a
              JOIN doctor d ON a.D_id = d.D_id
              WHERE a.P_id = $1
-             AND (a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) 
+             AND ((a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) )
              AND a.appointment_status = 'Scheduled'
              ORDER BY a.appointment_date, a.appointment_time;`,
             [patientId]
@@ -435,7 +435,7 @@ app.get('/api/appointments/:doctorId', async (req, res)=>{
      FROM appointment a
      JOIN patient p ON a.P_id = p.P_id
      WHERE a.D_id = $1
-     AND (a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) 
+     AND ((a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) )
      ORDER BY a.appointment_date, a.appointment_time`,
     [doctorId]
 
