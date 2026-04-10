@@ -4,7 +4,10 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-
+app.use(cors({
+  origin: 'https://your-frontend.vercel.app',
+  credentials: true
+}));
 // Database connection
 const db = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -419,7 +422,7 @@ app.put('/api/doctors/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
+//upcoming appointments for doctor
 app.get('/api/appointments/:doctorId', async (req, res)=>{
     try{
         const { doctorId } = req.params;
@@ -432,6 +435,7 @@ app.get('/api/appointments/:doctorId', async (req, res)=>{
      FROM appointment a
      JOIN patient p ON a.P_id = p.P_id
      WHERE a.D_id = $1
+     AND (a.appointment_date > CURRENT_DATE) OR (a.appointment_date = CURRENT_DATE AND a.appointment_time > CURRENT_TIME) 
      ORDER BY a.appointment_date, a.appointment_time`,
     [doctorId]
 
