@@ -231,6 +231,7 @@ app.get('/api/reports/:patientId', async (req, res) => {
              ORDER BY r.report_id DESC`,
             [patientId]
         );
+        console.log('Rows found:', result.rows);
         //res.json(patientId);
         res.json(result.rows);
     } catch (err) {

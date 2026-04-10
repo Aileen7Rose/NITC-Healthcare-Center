@@ -10,23 +10,23 @@ function ViewReports() {
   const patientId = localStorage.getItem('userId'); // Get logged-in patient ID
 
   useEffect(() => {
-    if (patientId) {
-      fetchReports();
-    }
-  }, [patientId]);
-
-  async function fetchReports() {
+    if (!patientId) return;
+    async function fetchReports() {
     try {
       const response = await axios.get(`${API_URL}/reports/${patientId}`);
       console.log('Reports:', response.data);
-      setReports(response.data);
+      setReports(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError('Failed to load reports');
       console.error('Error:', err);
     } finally {
       setLoading(false);
     }
-  }
+    }
+    fetchReports();
+  }, [patientId]);
+
+  
 
   if (loading) return <div className="loading">Loading reports...</div>;
   if (error) return <div className="error">{error}</div>;

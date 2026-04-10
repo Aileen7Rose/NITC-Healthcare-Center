@@ -1,0 +1,31 @@
+
+> frontend@0.1.0 start
+> react-scripts start
+
+(node:7348) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:7348) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:7348) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+/Users/kalpana/Desktop/NITC-Healthcare-Center/frontend/node_modules/react-scripts/scripts/start.js:19
+  throw err;
+  ^
+
+Error: ETIMEDOUT: connection timed out, read
+    at Object.readFileSync (node:fs:440:20)
+    at defaultLoadImpl (node:internal/modules/cjs/loader:1148:17)
+    at loadSource (node:internal/modules/cjs/loader:1838:20)
+    at Object..js (node:internal/modules/cjs/loader:1936:44)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1556:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (/Users/kalpana/Desktop/NITC-Healthcare-Center/frontend/node_modules/webpack/lib/javascript/CommonJsChunkFormatPlugin.js:15:5) {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+
+Node.js v24.14.1
