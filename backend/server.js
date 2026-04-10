@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: 'https://your-frontend.vercel.app',
+  origin: 'https://nitc-healthcare-center-murex.vercel.app',
   credentials: true
 }));
 // Database connection
